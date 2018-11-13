@@ -14,7 +14,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    calendar.cpp
+    calendar.cpp \
+    utils.cpp
 
 HEADERS  += mainwindow.h \
     calendar.h
