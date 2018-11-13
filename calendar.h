@@ -2,23 +2,15 @@
 #define CALENDAR_H
 
 #include <QObject>
+#include <QVector>
+#include <QMap>
+#include "utils.cpp"
 
 class Calendar : public QObject
 {
     Q_OBJECT
 public:
     explicit Calendar(QObject *parent = 0);
-
-    struct DateInfo {
-        int year;
-        int month;
-        QString month_name;
-        int day;
-        QString day_of_week;
-        int hour;
-        int minute;
-        int second;
-    };
 
 signals:
 
@@ -38,7 +30,7 @@ private:
     int current_day = 0;    // of this year
     int days_in_year = 0;   // how many days in year
 
-    QMap<QString, CalendarInfo> loadedCalendars = {};
+    QMap<QString, CalendarInfo> loadedCalendars;
 
 };
 
