@@ -17,9 +17,16 @@ CONFIG += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     calendar.cpp \
+    restdialog.cpp \
+    setdate.cpp \
     utils.cpp
 
 HEADERS  += mainwindow.h \
-    calendar.h
+    calendar.h \
+    restdialog.h \
+    setdate.h \
+    utils.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    restdialog.ui \
+    setdate.ui
