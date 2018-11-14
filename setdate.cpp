@@ -7,18 +7,18 @@ SetDate::SetDate(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    refresh();
-
     connect(ui->year_box, SIGNAL(valueChanged(int)),
-            this, SLOT(refresh()));
+            this, SLOT(value_changed()));
+    connect(ui->month_box, SIGNAL(valueChanged(int)),
+            this, SLOT(value_changed()));
     connect(ui->day_box, SIGNAL(valueChanged(int)),
-            this, SLOT(refresh()));
+            this, SLOT(value_changed()));
     connect(ui->hour_box, SIGNAL(valueChanged(int)),
-            this, SLOT(refresh()));
+            this, SLOT(value_changed()));
     connect(ui->minute_box, SIGNAL(valueChanged(int)),
-            this, SLOT(refresh()));
+            this, SLOT(value_changed()));
     connect(ui->second_box, SIGNAL(valueChanged(int)),
-            this, SLOT(refresh()));
+            this, SLOT(value_changed()));
     connect(ui->buttonBox, SIGNAL(accepted()),
             this, SLOT(accept()));
     connect(ui->buttonBox, SIGNAL(rejected()),
@@ -33,96 +33,49 @@ SetDate::~SetDate()
 void
 SetDate::set_calendar(CalendarInfo calendar){
     cal = calendar;
-}
-
-void
-SetDate::set_days_in_year(int d){
-    days_in_year = d;
+    ui->month_box->setMaximum(cal.months.size());
 }
 
 void
 SetDate::refresh(){
-    int year = ui->year_box->value();
-    int day = ui->day_box->value();
-    int hour = ui->hour_box->value();
-    int min = ui->minute_box->value();
-    int sec = ui->second_box->value();
-
-    DateInfo info;
-    info.year = year - cal.start_year;
-
-    int d = 0;
-
-    // add each month's days to d
-    // if d > current_day, we know that this is the month that the days are in
-    for(int i = 0; i < cal.months.length(); i++){
-        d += cal.month_lengths.at(i);
-        if(d > day-1){
-            info.month = i+1;
-            info.month_name = cal.months.at(i);
-
-            // remove this month's days to get d to be the sum of days to the
-            // start of this month. Used later.
-            d -= cal.month_lengths.at(i);
-            break;
-        }
-    }
-
-    info.day = day - d;
-
-    if(cal.days_of_week.isEmpty()){
-        info.day_of_week = "";
-
-    } else {
-        int days_from_year_1;
-        if(info.year > 0){
-            days_from_year_1 = days_in_year * (info.year-1);
-        } else {
-            days_from_year_1 = days_in_year * (abs(info.year));
-        }
-        info.day_of_week = cal.days_of_week[days_from_year_1 % cal.days_of_week.size()];
-    }
-
-    info.hour = hour;
-    info.minute = min;
-    info.second = sec;
-
-    date = info;
-
-    ui->date_preview->setText(format_date(info));
-
+    DateInfo date = util::epoch_to_date(epoch, cal);
+    ui->date_preview->setText(util::format_date(date));
 }
 
 void
-SetDate::set_values(DateInfo info){
-    date = info;
-    ui->year_box->setValue(date.year);
-    ui->day_box->setValue(date.day);
-    ui->hour_box->setValue(date.hour);
-    ui->minute_box->setValue(date.minute);
-    ui->second_box->setValue(date.second);
+SetDate::set_values(Epoch_date e){
+    epoch = e;
+    DateInfo info = util::epoch_to_date(e, cal);
+    ui->year_box->setValue(info.year);
+    ui->month_box->setValue(info.month);
+    ui->day_box->setValue(info.day);
+    ui->hour_box->setValue(info.hour);
+    ui->minute_box->setValue(info.minute);
+    ui->second_box->setValue(info.second);
+
+    refresh();
 }
 
-QString
-SetDate::format_date(DateInfo date){
-    QString resultwd = "%1, %2 of %3 %4 | %5:%6:%7";
-    QString resultnowd = "%1 of %2 %3 | %4:%5:%6";
-    QString result;
+void
+SetDate::value_changed(){
+    DateInfo info;
+    info.year = ui->year_box->value();
+    info.month = ui->month_box->value();
+    info.day = ui->day_box->value();
+    info.hour = ui->hour_box->value();
+    info.minute = ui->minute_box->value();
+    info.second = ui->second_box->value();
 
-    if(date.day_of_week.isEmpty()){
-        result = resultnowd.arg(QString::number(date.day), date.month_name,
-                                QString::number(date.year))
-                           .arg(date.hour, 2, 10, QChar('0'))
-                           .arg(date.minute, 2, 10, QChar('0'))
-                           .arg(date.second, 2, 10, QChar('0'));
-    } else {
-        result = resultwd.arg(date.day_of_week, QString::number(date.day),
-                              date.month_name,
-                              QString::number(date.year))
-                              .arg(date.hour, 2, 10, QChar('0'))
-                              .arg(date.minute, 2, 10, QChar('0'))
-                              .arg(date.second, 2, 10, QChar('0'));
+    if(info.day > cal.month_lengths.at(info.month-1)){
+        ui->day_box->setValue(cal.month_lengths.at(info.month-1));
+        info.day = cal.month_lengths.at(info.month-1);
     }
 
-    return result;
+    if(info.year == 0){
+        info.year = 1;
+        ui->year_box->setValue(1);
+    }
+
+    epoch = util::date_to_epoch(info, cal);
+    refresh();
 }

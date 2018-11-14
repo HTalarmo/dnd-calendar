@@ -5,9 +5,13 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <cmath>
+#include <QThread>
+#include <QTimer>
+#include <QIcon>
 #include "calendar.h"
 #include "restdialog.h"
 #include "setdate.h"
+#include "savemanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,29 +26,42 @@ public:
     ~MainWindow();
 
 public slots:
-    void update_date();
+    void update();
+    void add_turn();
     void add_15();
     void add_1h();
     void add_rest();
     void add_custom();
 
     void toolbar_action(QAction* action);
+    void calendar_changed(QString calendar_name);
 
     void add_event();
+    void remove_event();
+
+    void update_timer();
+
+    void start_timer();
+    void stop_timer();
+    void clear_timer();
+    void add_timer();
+    void timer_tick();
 
 private:
     Ui::MainWindow *ui;
     Calendar* cal;
 
+    QTimer* timer;
+    int timer_time = 0;
+
+    QVector<Game_event> events;
+
     void setup_toolbar();
     void setup_table();
 
-    //QString format_date(DateInfo date);
-    //QString format_date_short(DateInfo date);
-
     void setDate();
-    void save();
     void load();
+    void save();
 
 };
 

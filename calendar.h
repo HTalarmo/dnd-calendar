@@ -18,30 +18,29 @@ class Calendar : public QObject
 public:
     explicit Calendar(QObject *parent = 0);
 
-    Calendar operator=(const Calendar& other);
+    //Calendar operator=(const Calendar& other);
 
-signals:
-
-public slots:
-    DateInfo get_current_date(QString calendar_name);
+    DateInfo get_current_date();
+    Epoch_date get_current_date_epoch();
+    CalendarInfo get_current_calendar();
     CalendarInfo get_calendar(QString calendar_name);
     QVector<QString> get_loaded_calendars();
 
-    bool set_current_date(int year, int day, int hour, int minute, int second);
+    bool set_current_date(Epoch_date date);
     bool add_seconds(int s);
     bool add_minutes(int m);
     bool add_hours(int h);
     bool add_days(int d);
     bool add_years(int y);
 
-    int get_days_in_year();
+signals:
+
+public slots:
+    bool set_calendar(QString calendar_name);
 
 private:
-    int current_year = 0;   // since year 0
-    int current_day = 0;    // of this year
-    int current_hour = 0;
-    int current_minute = 0;
-    int current_second = 0;
+    Epoch_date current_date;
+    CalendarInfo current_calendar;
     int days_in_year = 0;   // how many days in year
 
     QVector<CalendarInfo> loadedCalendars;
@@ -49,6 +48,8 @@ private:
     QString calendar_file = "calendars.json";
 
     // funcs
+    bool add_time(int days, int seconds);
+
     void load_calendars();
     QString *validateCalendar(CalendarInfo calendar);
 

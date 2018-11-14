@@ -33,7 +33,58 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
+      <widget class="QSpinBox" name="day_box">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Georgia</family>
+        </font>
+       </property>
+       <property name="suffix">
+        <string> d</string>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>303</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="month_box">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Georgia</family>
+        </font>
+       </property>
+       <property name="suffix">
+        <string> m</string>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QSpinBox" name="year_box">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Georgia</family>
@@ -51,22 +102,13 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="day_box">
-       <property name="font">
-        <font>
-         <family>Georgia</family>
-        </font>
-       </property>
-       <property name="suffix">
-        <string> d</string>
-       </property>
-       <property name="maximum">
-        <number>303</number>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QSpinBox" name="hour_box">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Georgia</family>
@@ -82,6 +124,12 @@
      </item>
      <item>
       <widget class="QSpinBox" name="minute_box">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Georgia</family>
@@ -97,6 +145,12 @@
      </item>
      <item>
       <widget class="QSpinBox" name="second_box">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Georgia</family>

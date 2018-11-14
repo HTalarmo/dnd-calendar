@@ -16,23 +16,21 @@ public:
     explicit SetDate(QWidget *parent = 0);
     ~SetDate();
 
-    DateInfo date;
+    Epoch_date epoch;
 
     void set_calendar(CalendarInfo calendar);
-    void set_days_in_year(int d);
 
-    void set_values(DateInfo info);
+    void set_values(Epoch_date e);
 
 public slots:
     void refresh();
+    void value_changed();
 
 private:
     Ui::SetDate *ui;
 
     CalendarInfo cal;
 
-    QString format_date(DateInfo date);
-    int days_in_year = 0;
 };
 
 #endif // SETDATE_H

@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     cal = new Calendar(this);
+    timer = new QTimer(this);
 
     QVector<QString> calendars = cal->get_loaded_calendars();
 
@@ -14,15 +15,20 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->calendar_picker->addItem(s, s);
     }
 
+    cal->set_calendar(ui->calendar_picker->currentText());
+
     setup_toolbar();
     setup_table();
 
-    update_date();
+    update();
+    update_timer();
 
     // connections a plenty
     connect(ui->calendar_picker, SIGNAL(currentTextChanged(QString)),
-            this, SLOT(update_date()));
+            this, SLOT(calendar_changed(QString)));
 
+    connect(ui->add_turn, SIGNAL(clicked(bool)),
+            this, SLOT(add_turn()));
     connect(ui->add_15m, SIGNAL(clicked(bool)),
             this, SLOT(add_15()));
     connect(ui->add_1h, SIGNAL(clicked(bool)),
@@ -33,35 +39,75 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(add_custom()));
     connect(ui->event_accept, SIGNAL(clicked(bool)),
             this, SLOT(add_event()));
+    connect(ui->event_text, SIGNAL(returnPressed()),
+            this, SLOT(add_event()));
+    connect(ui->remove_button, SIGNAL(clicked(bool)),
+            this, SLOT(remove_event()));
 
+    connect(ui->timer_start_button, SIGNAL(clicked(bool)),
+            this, SLOT(start_timer()));
+    connect(ui->timer_stop_button, SIGNAL(clicked(bool)),
+            this, SLOT(stop_timer()));
+    connect(ui->timer_clear_button, SIGNAL(clicked(bool)),
+            this, SLOT(clear_timer()));
+    connect(ui->timer_add_time_button, SIGNAL(clicked(bool)),
+            this, SLOT(add_timer()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(timer_tick()));
+    
+    ui->timer_start_button->setIcon(QIcon("icons/play_icon.png"));
+    ui->timer_stop_button->setIcon(QIcon("icons/stop_icon.png"));
+    ui->timer_clear_button->setIcon(QIcon("icons/clear_icon.png"));
+    ui->timer_add_time_button->setIcon(QIcon("icons/add_icon.png"));
 }
 
 MainWindow::~MainWindow()
 {
     delete cal;
     delete ui;
+    delete timer;
 }
 
 void
-MainWindow::update_date(){
-    QString calendar_type = ui->calendar_picker->currentText();
-    DateInfo date = cal->get_current_date(calendar_type);
+MainWindow::update(){
+    DateInfo date = cal->get_current_date();
 
     ui->date_label->setText(util::format_date(date));
 
-    ui->event_table->clear();
+    // event listing
+    ui->event_table->setRowCount(events.size());
+
+    std::sort(events.begin(), events.end());
+
+    for(int i = 0; i < events.size(); i++){
+        Game_event event = events[events.size()-1-i];
+        QTableWidgetItem* time =
+                new QTableWidgetItem(
+                    util::format_date_short(
+                        util::epoch_to_date(event.epoch,
+                                            cal->get_current_calendar())));
+        QTableWidgetItem* txt =
+                new QTableWidgetItem(event.text);
+        ui->event_table->setItem(i, 0, time);
+        ui->event_table->setItem(i, 1, txt);
+    }
+}
+
+void
+MainWindow::add_turn(){
+    cal->add_seconds(6);
+    update();
 }
 
 void
 MainWindow::add_15(){
     cal->add_minutes(15);
-    update_date();
+    update();
 }
 
 void
 MainWindow::add_1h(){
     cal->add_hours(1);
-    update_date();
+    update();
 }
 
 void
@@ -79,7 +125,7 @@ MainWindow::add_rest(){
     cal->add_hours(hours);
     cal->add_minutes(minutes);
 
-    update_date();
+    update();
 
     delete dial;
 
@@ -108,55 +154,112 @@ MainWindow::add_custom(){
     cal->add_days(d);
     cal->add_years(y);
 
-    update_date();
+    update();
 }
 
 void
 MainWindow::toolbar_action(QAction *action){
-//    // set date
-//    if(action->text() == "Set Date"){
-//        SetDate* sd = new SetDate(this);
-//        CalendarInfo c = cal->get_calendar(ui->calendar_picker->currentText());
-//        sd->set_calendar(c);
-//        sd->set_days_in_year(cal->get_days_in_year());
-//        sd->set_values(cal->get_current_date(ui->calendar_picker->currentText()));
-//        if(sd->exec()){
-//            cal->set_current_date(sd->date.year,  sd->date.day, sd->date.hour,
-//                                  sd->date.minute, sd->date.second);
-//        }
-//    }
+    if(action->text() == "Set Date"){
+        setDate();
+    } else if (action->text() == "Load Session"){
+        load();
+    } else if (action->text() == "Save Session"){
+        save();
+    }
+}
 
-//    // Save session
-//    if(action->text() == "Save Session"){
-//        save();
-//    }
-
-//    // Load session
-//    if(action->text() == "Load Session"){
-//        load();
-//    }
-
-//    update_date();
+void
+MainWindow::calendar_changed(QString calendar_name){
+    if(cal->set_calendar(calendar_name)){
+        update();
+    }
 }
 
 void
 MainWindow::add_event(){
-//    QString calendar_type = ui->calendar_picker->currentText();
-//    DateInfo date = cal->get_current_date(calendar_type);
+    Game_event event;
+    event.epoch = cal->get_current_date_epoch();
+    event.text = ui->event_text->text();
+    ui->event_text->clear();
 
-//    QString event = ui->event_text->text();
-//    ui->event_text->clear();
+    events.append(event);
+    update();
+}
 
-//    QTableWidgetItem* time = new QTableWidgetItem(format_date_short(date));
-//    QTableWidgetItem* evnt = new QTableWidgetItem(event);
+void
+MainWindow::remove_event(){
+    int index = ui->event_table->currentRow();
+    index = events.size()-1-index;
 
-//    update_date();
+    if(index < 0 || index >= events.size()){
+        return;
+    }
+
+    events.removeAt(index);
+
+    update();
+}
+
+void
+MainWindow::update_timer(){
+    int min = timer_time/60;
+    int sec = timer_time%60;
+
+    ui->timer_minutes_display->display(min);
+    ui->timer_seconds_display->display(sec);
+}
+
+void
+MainWindow::start_timer(){
+    if(timer->isActive()){
+        timer->stop();
+        ui->timer_start_button->setIcon(QIcon("icons/play_icon.png"));
+        ui->timer_start_button->setText("Start");
+    } else {
+        ui->timer_start_button->setText("Pause");
+        ui->timer_start_button->setIcon(QIcon("icons/pause_icon.png"));
+        timer->start(1000);
+    }
+}
+
+void
+MainWindow::stop_timer(){
+    timer->stop();
+    clear_timer();
+    ui->timer_start_button->setIcon(QIcon("icons/play_icon.png"));
+    ui->timer_start_button->setText("Start");
+}
+
+void
+MainWindow::clear_timer(){
+    ui->timer_gradient_value->setValue(1);
+    timer_time = 0;
+    update_timer();
+}
+
+void MainWindow::add_timer(){
+    if(timer->isActive()){
+        timer->stop();
+        ui->timer_start_button->setIcon(QIcon("icons/play_icon.png"));
+        ui->timer_start_button->setText("Start");
+    }
+    cal->add_seconds(timer_time);
+    timer_time = 0;
+    update_timer();
+    update();
+}
+
+void
+MainWindow::timer_tick(){
+    timer_time += ui->timer_gradient_value->value();
+    update_timer();
 }
 
 void
 MainWindow::setup_toolbar(){
     ui->toolbar->addAction("Set Date");
     ui->toolbar->addAction("Save Session");
+    ui->toolbar->addAction("Load Session");
     connect(ui->toolbar, SIGNAL(actionTriggered(QAction*)),
             this, SLOT(toolbar_action(QAction*)));
 }
@@ -171,55 +274,63 @@ MainWindow::setup_table(){
 
 }
 
-//QString
-//MainWindow::format_date(DateInfo date){
-//    QString resultwd = "%1, %2 of %3 %4 | %5:%6:%7";
-//    QString resultnowd = "%1 of %2 %3 | %4:%5:%6";
-//    QString result;
+void
+MainWindow::setDate(){
+    SetDate* setter = new SetDate(this);
+    setter->set_calendar(cal->get_current_calendar());
+    setter->set_values(util::date_to_epoch(cal->get_current_date(), cal->get_current_calendar()));
 
-//    if(date.day_of_week.isEmpty()){
-//        result = resultnowd.arg(QString::number(date.day), date.month_name,
-//                                QString::number(date.year))
-//                           .arg(date.hour, 2, 10, QChar('0'))
-//                           .arg(date.minute, 2, 10, QChar('0'))
-//                           .arg(date.second, 2, 10, QChar('0'));
-//    } else {
-//        result = resultwd.arg(date.day_of_week, QString::number(date.day),
-//                              date.month_name,
-//                              QString::number(date.year))
-//                              .arg(date.hour, 2, 10, QChar('0'))
-//                              .arg(date.minute, 2, 10, QChar('0'))
-//                              .arg(date.second, 2, 10, QChar('0'));
-//    }
-
-//    return result;
-//}
-
-//QString
-//MainWindow::format_date_short(DateInfo date){
-//    QString result = "%1.%2.%3 %4:%5:%6";
-//    return result.arg(QString::number(date.day),
-//                      QString::number(date.month),
-//                      QString::number(date.year))
-//                 .arg(date.hour, 2, 10, QChar('0'))
-//                 .arg(date.minute, 2, 10, QChar('0'))
-//                 .arg(date.second, 2, 10, QChar('0'));
-//}
+    if(setter->exec()){
+        cal->set_current_date(setter->epoch);
+    }
+    update();
+}
 
 void
 MainWindow::save(){
-//    // generate epoch date
-//    DateInfo d = cal->get_current_date(ui->calendar_picker->currentText());
+    SaveManager* manager = new SaveManager(this);
+    manager->set_mode(SaveManager::Manager_mode::Saving);
 
-//    Epoch_date epoch = date_to_epoch(d);
-//    d = epoch_to_date(epoch, cal->get_calendar(ui->calendar_picker->currentText()));
+    Data d;
+    d.current_calendar = cal->get_current_calendar().name;
+    d.current_date = cal->get_current_date_epoch();
+    d.events = events;
+    manager->set_data(d);
 
-//    d.print();
-//    // create a json array of the events
+    manager->refresh_list();
 
+    manager->exec();
+
+    delete manager;
 }
 
 void
 MainWindow::load(){
+    SaveManager* manager = new SaveManager(this);
+    manager->set_mode(SaveManager::Manager_mode::Loading);
 
+    manager->refresh_list();
+
+    if(!manager->exec()){
+        return;
+    }
+
+    Data d = manager->get_data();
+    cal->set_current_date(d.current_date);
+    events = d.events;
+    int index;
+    bool found = false;
+    for(index = 0; index < ui->calendar_picker->count(); index++){
+        if(ui->calendar_picker->itemText(index) == d.current_calendar){
+            found = true;
+            break;
+        }
+    }
+
+    if(found){
+        ui->calendar_picker->setCurrentIndex(index);
+        cal->set_calendar(d.current_calendar);
+    }
+
+    update();
 }

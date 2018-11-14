@@ -19,14 +19,20 @@ SOURCES += main.cpp\
     calendar.cpp \
     restdialog.cpp \
     setdate.cpp \
-    utils.cpp
+    utils.cpp \
+    savemanager.cpp
 
 HEADERS  += mainwindow.h \
     calendar.h \
     restdialog.h \
     setdate.h \
-    utils.h
+    utils.h \
+    savemanager.h
 
 FORMS    += mainwindow.ui \
     restdialog.ui \
-    setdate.ui
+    setdate.ui \
+    savemanager.ui
+
+RESOURCES += \
+    resources.qrc

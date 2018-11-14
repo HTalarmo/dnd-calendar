@@ -6,77 +6,53 @@ Calendar::Calendar(QObject *parent) : QObject(parent)
     load_calendars();
 }
 
-Calendar
-Calendar::operator =(const Calendar& other){
-    current_year = other.current_year;
-    current_day = other.current_day;
-    current_hour = other.current_hour;
-    current_minute = other.current_minute;
-    current_second = other.current_second;
-    days_in_year = other.days_in_year;
-    loadedCalendars = other.loadedCalendars;
+//Calendar
+//Calendar::operator =(const Calendar& other){
+//    current_year = other.current_year;
+//    current_day = other.current_day;
+//    current_hour = other.current_hour;
+//    current_minute = other.current_minute;
+//    current_second = other.current_second;
+//    days_in_year = other.days_in_year;
+//    loadedCalendars = other.loadedCalendars;
+//}
+
+bool
+Calendar::set_calendar(QString calendar_name){
+    for(CalendarInfo cal : loadedCalendars){
+        if(cal.name == calendar_name){
+            current_calendar = cal;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 DateInfo
-Calendar::get_current_date(QString calendar_name){
-    CalendarInfo cal;
-    DateInfo info;
-    for(CalendarInfo c : loadedCalendars){
-        if(c.name == calendar_name){
-            cal = c;
+Calendar::get_current_date(){
+    return util::epoch_to_date(current_date, current_calendar);
+}
+
+Epoch_date
+Calendar::get_current_date_epoch(){
+    return current_date;
+}
+
+CalendarInfo
+Calendar::get_current_calendar(){
+    return current_calendar;
+}
+
+CalendarInfo
+Calendar::get_calendar(QString calendar_name){
+    CalendarInfo info;
+    for(CalendarInfo cal : loadedCalendars){
+        if(cal.name == calendar_name){
+            return cal;
         }
     }
-
-    if(cal.name.isEmpty()){
-        std::cout << "Calendar " << calendar_name.toStdString() << " not found!" << std::endl;
-        return info;
-    }
-
-    info.year = current_year - cal.start_year;
-
-    // find correct month
-    int d = 0;
-
-    // add each month's days to d
-    // if d > current_day, we know that this is the month that the days are in
-    for(int i = 0; i < cal.months.length(); i++){
-        d += cal.month_lengths.at(i);
-        if(d > current_day-1){
-            info.month = i+1;
-            info.month_name = cal.months.at(i);
-
-            // remove this month's days to get d to be the sum of days to the
-            // start of this month. Used later.
-            d -= cal.month_lengths.at(i);
-            break;
-        }
-    }
-
-    info.day = current_day - d; // d is days to the start of this month
-
-    // get day of week
-    // assumes that day 0 of year 1 is first day of week.
-
-    // if no days of week, set empty
-    if(cal.days_of_week.isEmpty()){
-        info.day_of_week = "";
-
-    } else {
-        int days_from_year_1;
-        if(info.year > 0){
-            days_from_year_1 = days_in_year * (info.year-1);
-        } else {
-            days_from_year_1 = days_in_year * (abs(info.year));
-        }
-        info.day_of_week = cal.days_of_week[days_from_year_1 % cal.days_of_week.size()];
-    }
-
-    info.hour = current_hour;
-    info.minute = current_minute;
-    info.second = current_second;
-
     return info;
-
 }
 
 QVector<QString>
@@ -90,128 +66,54 @@ Calendar::get_loaded_calendars(){
 }
 
 bool
-Calendar::set_current_date(int year, int day, int hour, int minute, int second){
-    current_year = year;
+Calendar::set_current_date(Epoch_date date){
+    current_date = date;
+    return true;
+}
 
-    if(day > days_in_year){
-        return false;
-    } else {
-        current_day = day;
+bool
+Calendar::add_time(int days, int seconds){
+    // add the seconds
+    current_date.time += seconds;
+    int seconds_in_day = 60*60*24;
+    if(current_date.time >= seconds_in_day){
+        int added_days = current_date.time/seconds_in_day;
+        current_date.time -= added_days*seconds_in_day;
+        days += added_days;
+    } else if(current_date.time < 0){
+        int added_days = current_date.time/seconds_in_day - 1;
+        current_date.time -= added_days*seconds_in_day;
+        days += added_days;
     }
 
-    if(hour > 23 || hour < 0){
-        return false;
-    } else {
-        current_hour = hour;
-    }
-
-    if(minute > 59 || minute < 0){
-        return false;
-    } else {
-        current_minute = minute;
-    }
-
-    if(second > 59 || second < 0){
-        return false;
-    } else {
-        current_second = second;
-    }
-
+    // add the days
+    current_date.date += days;
     return true;
 }
 
 bool
 Calendar::add_seconds(int s){
-    current_second += s;
-    if(current_second >= 60){
-        int extra_minutes = current_second / 60;
-        add_minutes(extra_minutes);
-        current_second -= 60*extra_minutes;
-    } else if(current_second < 0){
-        int neg_minutes = abs(current_second) / 60 + 1;
-        add_minutes(-neg_minutes);
-        current_second += 60*neg_minutes;
-    }
-
-    return true;
+    return add_time(0, s);
 }
 
 bool
 Calendar::add_minutes(int m){
-    current_minute += m;
-    if(current_minute >= 60){
-        int extra_hours = current_minute / 60;
-        add_hours(extra_hours);
-        current_minute -= 60*extra_hours;
-    } else if(current_minute < 0){
-        int neg_hours = abs(current_minute) / 60 + 1;
-        add_hours(-neg_hours);
-        current_minute += 60*neg_hours;
-    }
-
-    return true;
+    return add_time(0, m*60);
 }
 
 bool
 Calendar::add_hours(int h){
-    current_hour += h;
-    if(current_hour >= 24){
-        int extra_days = current_hour / 24;
-        add_days(extra_days);
-        current_hour -= 24*extra_days;
-    } else if(current_hour < 0){
-        int neg_days = abs(current_hour) / 24 + 1;
-        add_days(-neg_days);
-        current_hour += 24*neg_days;
-    }
-
-    return true;
+    return add_time(0, h*60*60);
 }
 
 bool
 Calendar::add_days(int d){
-    current_day += d;
-    if(current_day > days_in_year){
-        int extra_years = (current_day-1) / days_in_year;
-        add_years(extra_years);
-        current_day -= days_in_year*extra_years;
-    } else if(current_day < 1){
-        int neg_years = abs(current_day) / days_in_year + 1;
-        add_years(-neg_years);
-        current_day += days_in_year*neg_years;
-    }
-
-    return true;
+    return add_time(d, 0);
 }
 
 bool
 Calendar::add_years(int y){
-    if(current_year > 0 && current_year+y <= 0){
-        current_year += y-1;
-    } else if(current_year < 0 && current_year+y >= 0){
-        current_year += y+1;
-    } else {
-        current_year += y;
-    }
-    return true;
-}
-
-CalendarInfo
-Calendar::get_calendar(QString calendar_name){
-    for(CalendarInfo c : loadedCalendars){
-        if(c.name == calendar_name){
-            return c;
-        }
-    }
-
-    CalendarInfo c;
-
-    return c;
-}
-
-int
-Calendar::get_days_in_year(){
-    return days_in_year;
+    return add_time(y*303, 0);
 }
 
 void
@@ -257,6 +159,7 @@ Calendar::load_calendars(){
             cinfo.month_lengths.append(len.toInt());
         }
         cinfo.start_year = obj["start_year"].toInt();
+        cinfo.days_in_year = obj["days_in_year"].toInt();
 
         QString* err = validateCalendar(cinfo);
         if(err != nullptr){
@@ -280,10 +183,10 @@ Calendar::validateCalendar(CalendarInfo calendar){
         sum += v;
     }
 
-    if(sum != days_in_year){
+    if(sum != calendar.days_in_year){
         QString* err = new QString();
         *err = "Invalid calendar month lengths: " + calendar.name +
-               " (" + QString::number(sum) + " != " + QString::number(days_in_year) +
+               " (" + QString::number(sum) + " != " + QString::number(calendar.days_in_year) +
                ")";
         return err;
     }
@@ -302,27 +205,6 @@ Calendar::validateCalendar(CalendarInfo calendar){
 
 void
 Calendar::test(QString val, int amt){
-    std::cout << "Adding " << amt << " " << val.toStdString() << "..." << std::endl;
-    if(val == "seconds"){
-        add_seconds(amt);
-    }
-    else if(val == "minutes"){
-        add_minutes(amt);
-    }
-    else if(val == "hours"){
-        add_hours(amt);
-    }
-    else if(val == "days"){
-        add_days(amt);
-    }
-    else if(val == "years"){
-        add_years(amt);
-    }
-    else {
-        std::cout << "Unknown value " << val.toStdString() << std::endl;
-    }
 
-    DateInfo date = get_current_date("Kitsune Calendar");
-    date.print();
 }
 
