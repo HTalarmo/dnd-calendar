@@ -1,0 +1,23 @@
+{
+    "current_calendar": "Human Calendar",
+    "current_date": {
+        "date": 0,
+        "time": 3600
+    },
+    "events": [
+        {
+            "epoch": {
+                "date": 0,
+                "time": 0
+            },
+            "text": "session stuff"
+        },
+        {
+            "epoch": {
+                "date": 0,
+                "time": 3600
+            },
+            "text": "asd"
+        }
+    ]
+}

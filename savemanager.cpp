@@ -81,6 +81,8 @@ SaveManager::del(){
     msg.setIcon(QMessageBox::NoIcon);
     msg.setText("File " + selected + " was deleted successfully.");
 
+    refresh_list();
+
     return;
 
 }

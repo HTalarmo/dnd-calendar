@@ -29,8 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->add_turn, SIGNAL(clicked(bool)),
             this, SLOT(add_turn()));
-    connect(ui->add_15m, SIGNAL(clicked(bool)),
-            this, SLOT(add_15()));
+    connect(ui->add_10m, SIGNAL(clicked(bool)),
+            this, SLOT(add_10()));
     connect(ui->add_1h, SIGNAL(clicked(bool)),
             this, SLOT(add_1h()));
     connect(ui->add_rest, SIGNAL(clicked(bool)),
@@ -99,8 +99,8 @@ MainWindow::add_turn(){
 }
 
 void
-MainWindow::add_15(){
-    cal->add_minutes(15);
+MainWindow::add_10(){
+    cal->add_minutes(10);
     update();
 }
 

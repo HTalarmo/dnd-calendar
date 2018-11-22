@@ -1,0 +1,60 @@
+{
+    "calendars":[
+        {
+            "name":"Human Calendar",
+            "months":[
+                "First",
+                "Second",
+                "Third",
+                "Fourth",
+                "Fifth",
+                "Sixth",
+                "Seventh",
+                "Eighth",
+                "Ninth"
+            ],
+            "days_of_week":[
+                "Grasdeg",
+                "Gundeg",
+                "Daareg",
+                "Ideg",
+                "Aradeg",
+                "Annudeg",
+                "Eirdeg",
+                "Futeg"
+            ],
+            "month_lengths":[
+                34,
+                34,
+                33,
+                34,
+                34,
+                33,
+                34,
+                34,
+                33
+            ],
+            "start_year": 0,
+            "days_in_year": 303
+        },
+        {
+            "name":"Kitsune Calendar",
+            "months":[
+                "Winter",
+                "Spring",
+                "Summer",
+                "Autumn"
+            ],
+            "days_of_week":[
+            ],
+            "month_lengths":[
+                76,
+                76,
+                76,
+                75
+            ],
+            "start_year": -1878,
+            "days_in_year": 303
+        }
+    ]
+}

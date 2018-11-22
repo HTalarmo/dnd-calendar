@@ -1,0 +1,23 @@
+{
+    "current_date":{
+        "date":100,
+        "time":20
+    },
+    "current_calendar":"Human Calendar",
+    "events":[
+        {
+            "epoch":{
+                "date":100,
+                "time":10
+            },
+            "text":"Stuff happened"
+        },
+        {
+            "epoch":{
+                "date":100,
+                "time":5
+            },
+            "text":"SURPRISE"
+        }
+    ]
+}

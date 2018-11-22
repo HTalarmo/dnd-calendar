@@ -28,7 +28,7 @@ public:
 public slots:
     void update();
     void add_turn();
-    void add_15();
+    void add_10();
     void add_1h();
     void add_rest();
     void add_custom();
