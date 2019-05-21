@@ -501,7 +501,8 @@ MainWindow::create_moon_frame(int cur, MoonInfo minfo){
     tile_frame->setLayout(tile_layout);
 
     QLabel* img = new QLabel();
-    img->setAlignment(Qt::AlignHCenter);
+    //img->setAlignment(Qt::AlignHCenter);
+    img->setAlignment(Qt::AlignCenter);
     img->setPicture(draw_moon(cur, minfo.orbit_time, minfo.color, minfo.rotation));
 
     main_layout->addWidget(img);

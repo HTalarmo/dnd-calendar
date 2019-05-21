@@ -134,7 +134,7 @@ Calendar::add_days(int d){
 
 bool
 Calendar::add_years(int y){
-    return add_time(y*303, 0);
+    return add_time(y*get_current_calendar().days_in_year, 0);
 }
 
 void
