@@ -11,12 +11,11 @@
 #include <QPicture>
 #include <QPainter>
 #include <QFrame>
+#include <QFileDialog>
 #include "calendar.h"
 #include "restdialog.h"
 #include "setdate.h"
 #include "savemanager.h"
-
-#include <QFontDatabase>
 
 namespace Ui {
 class MainWindow;

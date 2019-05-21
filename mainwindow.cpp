@@ -318,7 +318,30 @@ MainWindow::setDate(){
 
 void
 MainWindow::save(){
-    SaveManager* manager = new SaveManager(this);
+    QString filepath = QFileDialog::getSaveFileName(this, tr("Save"), QDir::currentPath(), tr("Save files(*.save)"));
+
+    if(filepath.isEmpty()){
+        return;
+    }
+
+    Data d;
+    d.current_calendar = cal->get_current_calendar().name;
+    d.current_date = cal->get_current_date_epoch();
+    d.events = events;
+    QJsonObject obj = d.to_obj();
+    QMessageBox msg(this);
+    msg.setStandardButtons(QMessageBox::Ok);
+    msg.setDefaultButton(QMessageBox::Ok);
+    if(util::json_to_file(obj, filepath)){
+        QString txt = "Saved to file " + filepath;
+        msg.setText(txt);
+    } else {
+        msg.setText("Save Failed!");
+    }
+
+    msg.exec();
+
+    /*SaveManager* manager = new SaveManager(this);
     manager->set_mode(SaveManager::Manager_mode::Saving);
 
     Data d;
@@ -331,12 +354,12 @@ MainWindow::save(){
 
     manager->exec();
 
-    delete manager;
+    delete manager;*/
 }
 
 void
 MainWindow::load(){
-    SaveManager* manager = new SaveManager(this);
+    /*SaveManager* manager = new SaveManager(this);
     manager->set_mode(SaveManager::Manager_mode::Loading);
 
     manager->refresh_list();
@@ -346,6 +369,23 @@ MainWindow::load(){
     }
 
     Data d = manager->get_data();
+    */
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open file"), QDir::currentPath(), tr("Saves (*.save)"));
+    if(filename.isEmpty()) return;
+
+    QJsonObject obj = util::file_to_json(filename);
+    QMessageBox msg(this);
+    msg.setStandardButtons(QMessageBox::Ok);
+    msg.setDefaultButton(QMessageBox::Ok);
+    if(obj.empty()){
+        QString failtext = "Loading file " + filename + " failed!";
+        msg.setText(failtext);
+        msg.exec();
+        return;
+    }
+    Data d;
+    d.set_data(obj);
+
     cal->set_current_date(d.current_date);
     events = d.events;
     int index;
@@ -361,6 +401,9 @@ MainWindow::load(){
         ui->calendar_picker->setCurrentIndex(index);
         cal->set_calendar(d.current_calendar);
     }
+
+    msg.setText("Loaded file " + filename);
+    msg.exec();
 
     update();
 }
