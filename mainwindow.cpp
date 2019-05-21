@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->timer_clear_button->setIcon(QIcon("icons/clear_icon.png"));
     ui->timer_add_time_button->setIcon(QIcon("icons/add_icon.png"));
 
-    moon_test(10, 30);
+    ui->moon_test_label->setPicture(draw_moon(26, 144));
 }
 
 MainWindow::~MainWindow()
@@ -337,24 +337,74 @@ MainWindow::load(){
     update();
 }
 
-void
-MainWindow::moon_test(int cur, int val, QColor base_color){
+QPicture MainWindow::draw_moon(int cur, int max, QColor base_color){
     QPicture picture;
     QPainter painter;
     QColor bg = base_color;
     bg.setHsv(bg.hue(), bg.saturation(), bg.value()*0.6);
 
+    int width = 100;
+    int height = 100;
+
     QPen pen;
     pen.setColor(base_color);
-    QRectF base_rec(0, 0, 100, 100);
-    QRectF light_rec(10,0,80,100);
+    QRectF base_rec(0, 0, width, height);
+    QRectF light_rec;
 
     QPainterPath background;
     background.addEllipse(base_rec);
 
+    // if cur == 0, it's new moon and no shadow is drawn
+    // if it's half, it's full moon
     QPainterPath light;
-    light.arcTo(base_rec, 90, 180);
-    light.arcTo(light_rec, 270, -180);
+    int new_moon = 0;
+    int first_half = int(max/4);
+    int full_moon = int(max/2);
+    int second_half = full_moon + first_half;
+
+    if(cur == full_moon || cur > max || cur < 0){
+        light.addEllipse(base_rec);
+
+    } else {
+        if(cur < full_moon){
+            light.arcTo(base_rec, 90, 180);
+        } else {
+            light.arcTo(base_rec, 90, -180);
+        }
+
+        if(cur == first_half || cur == second_half){
+            light.lineTo(50, 0);
+        } else {
+            if(cur < first_half){
+                int cut_width = float(width)*float(cur)/float(first_half);
+                int l_width = width - cut_width;
+                int x_offset = cut_width/2;
+                light_rec = QRectF(x_offset, 0, l_width, height);
+                light.arcTo(light_rec, 270, -180);
+            }
+            else if(cur < full_moon){
+                int l_width = float(width)*float(cur-first_half)/float(full_moon-first_half);
+                int cut_width = width - l_width;
+                int x_offset = cut_width/2;
+                light_rec = QRectF(x_offset, 0, l_width, height);
+                light.arcTo(light_rec, 270, 180);
+            }
+            else if(cur < second_half){
+                int cut_width = float(width)*float(cur-full_moon)/float(second_half-full_moon);
+                int l_width = width - cut_width;
+                int x_offset = cut_width/2;
+                light_rec = QRectF(x_offset, 0, l_width, height);
+                light.arcTo(light_rec, 270, -180);
+            }
+            else if(cur <= max){
+                int l_width = float(width)*float(cur-second_half)/float(max-second_half);
+                int cut_width = width - l_width;
+                int x_offset = cut_width/2;
+                light_rec = QRectF(x_offset, 0, l_width, height);
+                light.arcTo(light_rec, 270, 180);
+            }
+        }
+    }
 
     // just draw a moon
     painter.begin(&picture);
@@ -362,5 +412,5 @@ MainWindow::moon_test(int cur, int val, QColor base_color){
     painter.fillPath(background, bg);
     painter.fillPath(light, base_color);
     painter.end();
-    ui->moon_test_label->setPicture(picture);
+    return picture;
 }
