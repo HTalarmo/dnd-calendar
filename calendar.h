@@ -12,10 +12,14 @@
 #include <QJsonObject>
 #include "utils.h"
 
+/* Stores calendar information
+ *
+ * */
 class Calendar : public QObject
 {
     Q_OBJECT
 public:
+    // Creates the calendar and sets days in year and loads calendars
     explicit Calendar(QObject *parent = 0);
 
     //Calendar operator=(const Calendar& other);
@@ -45,12 +49,15 @@ private:
 
     QVector<CalendarInfo> loadedCalendars;
 
+    // file in which all the calendar information is stored
     QString calendar_file = "calendars.json";
 
     // funcs
     bool add_time(int days, int seconds);
 
+    // loads the calendars from the file designated in calendar_file
     void load_calendars();
+
     QString *validateCalendar(CalendarInfo calendar);
 
     void test(QString val, int amt);
