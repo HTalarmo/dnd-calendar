@@ -55,6 +55,55 @@
             ],
             "start_year": -1878,
             "days_in_year": 303
+        },
+        {
+            "name":"Drow Calendar",
+            "months":[
+                "Arcania",
+                "Feralia",
+                "Radikas",
+                "Venia",
+                "Noctil",
+                "Aquor",
+                "Mortalis",
+                "Tenebris"
+            ],
+            "days_of_week":[
+            ],
+            "month_lengths":[
+                36,
+                36,
+                36,
+                36,
+                36,
+                36,
+                36,
+                36
+            ],
+            "start_year": 1390,
+            "days_in_year": 288
+        }
+    ],
+    "moons":[
+        {
+            "name":"Calista",
+            "orbital_period":48,
+            "start_date":13,
+            "color":{
+                "red": 128,
+                "green": 0,
+                "blue": 0
+            }
+        },
+        {
+            "name":"Deothon",
+            "orbital_period":144,
+            "start_date":13,
+            "color":{
+                "red": 0,
+                "green": 128,
+                "blue": 0
+            }
         }
     ]
 }

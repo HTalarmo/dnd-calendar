@@ -55,6 +55,17 @@ Calendar::get_calendar(QString calendar_name){
     return info;
 }
 
+MoonInfo
+Calendar::get_moon(QString moon_name){
+    MoonInfo info;
+    for(MoonInfo moon : moons){
+        if(moon.name == moon_name){
+            return moon;
+        }
+    }
+    return info;
+}
+
 QVector<QString>
 Calendar::get_loaded_calendars(){
     QVector<QString> cals;
@@ -63,6 +74,16 @@ Calendar::get_loaded_calendars(){
     }
 
     return cals;
+}
+
+QVector<QString>
+Calendar::get_loaded_moons(){
+    QVector<QString> mons;
+    for(MoonInfo info : moons){
+        mons.append(info.name);
+    }
+
+    return mons;
 }
 
 bool
@@ -144,6 +165,7 @@ Calendar::load_calendars(){
 
     QJsonObject data = data_doc.object();
     QJsonArray calendars = data["calendars"].toArray();
+    QJsonArray moon_data = data["moons"].toArray();
 
     for(QJsonValue val : calendars){
         CalendarInfo cinfo;
@@ -173,6 +195,24 @@ Calendar::load_calendars(){
     }
 
     std::cout << "Loaded calendars!" << std::endl;
+
+    for(QJsonValue val : moon_data){
+        MoonInfo minfo;
+        QJsonObject obj = val.toObject();
+        minfo.name = obj["name"].toString();
+        minfo.orbit_time = obj["orbital_period"].toInt();
+        minfo.start_date = obj["start_date"].toInt();
+        QJsonObject color = obj["color"].toObject();
+        int red = color["red"].toInt();
+        int green = color["green"].toInt();
+        int blue = color["blue"].toInt();
+        minfo.color = QColor(red, green, blue);
+
+        moons.append(minfo);
+    }
+
+    std::cout << "Loaded mooons!" << std::endl;
+
 }
 
 QString*

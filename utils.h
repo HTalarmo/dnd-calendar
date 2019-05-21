@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QColor>
 
 struct DateInfo {
     int year;
@@ -26,6 +27,13 @@ struct DateInfo {
                      year << " " << hour << ":" << minute <<
                      ":" << second << std::endl;
     }
+};
+
+struct MoonInfo {
+    QString name;
+    int orbit_time;
+    QColor color;
+    int start_date;
 };
 
 struct CalendarInfo {

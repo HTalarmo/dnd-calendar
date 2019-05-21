@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setup_toolbar();
     setup_table();
+    setup_moons();
 
     update();
     update_timer();
@@ -59,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->timer_clear_button->setIcon(QIcon("icons/clear_icon.png"));
     ui->timer_add_time_button->setIcon(QIcon("icons/add_icon.png"));
 
-    ui->moon_test_label->setPicture(draw_moon(26, 144));
+    //ui->moon_test_label->setPicture(draw_moon(26, 144, QColor(188, 139, 71)));
 }
 
 MainWindow::~MainWindow()
@@ -92,6 +93,9 @@ MainWindow::update(){
         ui->event_table->setItem(i, 0, time);
         ui->event_table->setItem(i, 1, txt);
     }
+
+    // update moons
+    setup_moons();
 }
 
 void
@@ -277,6 +281,30 @@ MainWindow::setup_table(){
 }
 
 void
+MainWindow::setup_moons(){
+    for(QFrame *moon_frame : moon_frames){
+        delete moon_frame;
+    }
+    moon_frames.clear();
+    QVector<QString> moons = cal->get_loaded_moons();
+    for(QString moon_name : moons){
+        MoonInfo minfo = cal->get_moon(moon_name);
+        int day = cal->get_current_date_epoch().date;
+        int cur;
+        if(day < minfo.start_date){
+            cur = 0;
+        } else {
+            cur = (cal->get_current_date_epoch().date - minfo.start_date)%minfo.orbit_time;
+        }
+        moon_frames.append(create_moon_frame(cur, minfo));
+    }
+
+    for(QFrame *moon_frame : moon_frames){
+        ui->moon_frame->layout()->addWidget(moon_frame);
+    }
+}
+
+void
 MainWindow::setDate(){
     SetDate* setter = new SetDate(this);
     setter->set_calendar(cal->get_current_calendar());
@@ -338,6 +366,10 @@ MainWindow::load(){
 }
 
 QPicture MainWindow::draw_moon(int cur, int max, QColor base_color){
+    if(!base_color.isValid()){
+        base_color = Qt::gray;
+    }
+
     QPicture picture;
     QPainter painter;
     QColor bg = base_color;
@@ -413,4 +445,76 @@ QPicture MainWindow::draw_moon(int cur, int max, QColor base_color){
     painter.fillPath(light, base_color);
     painter.end();
     return picture;
+}
+
+QFrame*
+MainWindow::create_moon_frame(int cur, MoonInfo minfo){
+    QFrame *frame = new QFrame();
+    frame->setFrameShape(QFrame::Box);
+
+    QVBoxLayout *main_layout = new QVBoxLayout();
+    QFrame *tile_frame = new QFrame();
+    QHBoxLayout *tile_layout = new QHBoxLayout();
+    QFrame *new_moon_frame = new QFrame();
+    QFrame *full_moon_frame = new QFrame();
+    QVBoxLayout *new_moon_layout = new QVBoxLayout();
+    QVBoxLayout *full_moon_layout = new QVBoxLayout();
+
+    int new_moon = minfo.orbit_time;
+    int full_moon = minfo.orbit_time/2;
+
+    new_moon_layout->addWidget(new QLabel("Next new moon"));
+    QLabel* new_moon_label = new QLabel();
+    if(cur == 0){
+        new_moon_label->setStyleSheet("QLabel {color : green}");
+        new_moon_label->setText("NOW");
+    } else {
+        int time_to_nm = new_moon - cur;
+        new_moon_label->setText(QString::number(time_to_nm) + "d");
+    }
+    new_moon_layout->addWidget(new_moon_label);
+    new_moon_frame->setLayout(new_moon_layout);
+    new_moon_frame->setFrameShape(QFrame::Box);
+
+    full_moon_layout->addWidget(new QLabel("Next full moon"));
+    QLabel* full_moon_label = new QLabel();
+    if(cur == full_moon){
+        full_moon_label->setStyleSheet("QLabel {color : green}");
+        full_moon_label->setText("NOW");
+    } else {
+        int time_to_fm;
+        if(cur < full_moon){
+            time_to_fm = full_moon - cur;
+        } else {
+            time_to_fm = new_moon - cur + full_moon;
+        }
+        full_moon_label->setText(QString::number(time_to_fm) + "d");
+    }
+    full_moon_layout->addWidget(full_moon_label);
+    full_moon_frame->setLayout(full_moon_layout);
+    full_moon_frame->setFrameShape(QFrame::Box);
+
+    tile_layout->addWidget(new_moon_frame);
+    tile_layout->addWidget(full_moon_frame);
+    tile_frame->setLayout(tile_layout);
+
+    QLabel* img = new QLabel();
+    img->setAlignment(Qt::AlignHCenter);
+    img->setPicture(draw_moon(cur, minfo.orbit_time, minfo.color));
+
+    main_layout->addWidget(img);
+    QLabel* name = new QLabel(minfo.name);
+    name->setAlignment(Qt::AlignHCenter);
+    QFont namefont;
+    namefont.setBold(true);
+    namefont.setPointSize(12);
+    //namefont.setFamily();
+    name->setFont(namefont);
+    name->setAlignment(Qt::AlignHCenter);
+    main_layout->addWidget(name);
+    main_layout->addWidget(tile_frame);
+
+    frame->setLayout(main_layout);
+
+    return frame;
 }

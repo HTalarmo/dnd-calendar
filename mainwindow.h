@@ -10,10 +10,13 @@
 #include <QIcon>
 #include <QPicture>
 #include <QPainter>
+#include <QFrame>
 #include "calendar.h"
 #include "restdialog.h"
 #include "setdate.h"
 #include "savemanager.h"
+
+#include <QFontDatabase>
 
 namespace Ui {
 class MainWindow;
@@ -57,15 +60,18 @@ private:
     int timer_time = 0;
 
     QVector<Game_event> events;
+    QVector<QFrame*> moon_frames;
 
     void setup_toolbar();
     void setup_table();
+    void setup_moons();
 
     void setDate();
     void load();
     void save();
 
     QPicture draw_moon(int cur, int max, QColor base_color = Qt::gray);
+    QFrame* create_moon_frame(int cur, MoonInfo minfo);
 
 };
 

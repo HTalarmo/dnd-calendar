@@ -28,7 +28,9 @@ public:
     Epoch_date get_current_date_epoch();
     CalendarInfo get_current_calendar();
     CalendarInfo get_calendar(QString calendar_name);
+    MoonInfo get_moon(QString moon_name);
     QVector<QString> get_loaded_calendars();
+    QVector<QString> get_loaded_moons();
 
     bool set_current_date(Epoch_date date);
     bool add_seconds(int s);
@@ -48,6 +50,7 @@ private:
     int days_in_year = 0;   // how many days in year
 
     QVector<CalendarInfo> loadedCalendars;
+    QVector<MoonInfo> moons;
 
     // file in which all the calendar information is stored
     QString calendar_file = "calendars.json";

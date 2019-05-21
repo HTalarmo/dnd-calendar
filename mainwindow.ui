@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>845</width>
-    <height>592</height>
+    <width>881</width>
+    <height>773</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,22 +80,14 @@
      </layout>
     </item>
     <item alignment="Qt::AlignHCenter">
-     <widget class="QFrame" name="frame">
+     <widget class="QFrame" name="moon_frame">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="moon_test_label">
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <layout class="QHBoxLayout" name="horizontalLayout"/>
      </widget>
     </item>
     <item>
@@ -696,7 +688,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>845</width>
+     <width>881</width>
      <height>20</height>
     </rect>
    </property>
