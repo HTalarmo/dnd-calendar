@@ -34,6 +34,7 @@ struct MoonInfo {
     int orbit_time;
     QColor color;
     int start_date;
+    int rotation;
 };
 
 struct CalendarInfo {

@@ -365,13 +365,14 @@ MainWindow::load(){
     update();
 }
 
-QPicture MainWindow::draw_moon(int cur, int max, QColor base_color){
+QPicture MainWindow::draw_moon(int cur, int max, QColor base_color, int rotation){
     if(!base_color.isValid()){
         base_color = Qt::gray;
     }
 
     QPicture picture;
     QPainter painter;
+
     QColor bg = base_color;
     bg.setHsv(bg.hue(), bg.saturation(), bg.value()*0.6);
 
@@ -441,6 +442,7 @@ QPicture MainWindow::draw_moon(int cur, int max, QColor base_color){
     // just draw a moon
     painter.begin(&picture);
     painter.setPen(pen);
+    painter.rotate(rotation);
     painter.fillPath(background, bg);
     painter.fillPath(light, base_color);
     painter.end();
@@ -500,7 +502,7 @@ MainWindow::create_moon_frame(int cur, MoonInfo minfo){
 
     QLabel* img = new QLabel();
     img->setAlignment(Qt::AlignHCenter);
-    img->setPicture(draw_moon(cur, minfo.orbit_time, minfo.color));
+    img->setPicture(draw_moon(cur, minfo.orbit_time, minfo.color, minfo.rotation));
 
     main_layout->addWidget(img);
     QLabel* name = new QLabel(minfo.name);

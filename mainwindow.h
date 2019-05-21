@@ -70,7 +70,7 @@ private:
     void load();
     void save();
 
-    QPicture draw_moon(int cur, int max, QColor base_color = Qt::gray);
+    QPicture draw_moon(int cur, int max, QColor base_color = Qt::gray, int rotation = 0);
     QFrame* create_moon_frame(int cur, MoonInfo minfo);
 
 };

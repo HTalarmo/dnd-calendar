@@ -203,6 +203,7 @@ Calendar::load_calendars(){
         minfo.name = obj["name"].toString();
         minfo.orbit_time = obj["orbital_period"].toInt();
         minfo.start_date = obj["start_date"].toInt();
+        minfo.rotation = obj["rotation"].toInt();
         QJsonObject color = obj["color"].toObject();
         int red = color["red"].toInt();
         int green = color["green"].toInt();
