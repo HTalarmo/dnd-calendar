@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     cal = new Calendar(this);
     timer = new QTimer(this);
+    this->setWindowIcon(QIcon("icons/dnd_calendar_icon.png"));
+    this->setWindowTitle("D&D Calendar");
 
     QVector<QString> calendars = cal->get_loaded_calendars();
 
