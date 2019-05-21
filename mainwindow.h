@@ -65,7 +65,7 @@ private:
     void load();
     void save();
 
-    void moon_test(int cur, int val, QColor base_color = Qt::red);
+    void moon_test(int cur, int val, QColor base_color = Qt::gray);
 
 };
 
