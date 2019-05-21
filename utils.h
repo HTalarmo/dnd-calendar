@@ -42,7 +42,8 @@ struct CalendarInfo {
     QVector<QString> days_of_week;
     QVector<int> month_lengths;
     int days_in_year;
-    int start_year;
+    //int start_year;
+    int start_day;
 
     QString print(){
         QString result = "";
@@ -60,7 +61,7 @@ struct CalendarInfo {
         for(int val : month_lengths){
             result += QString::number(val) + ", ";
         }
-        result += "\nstart year: " + QString::number(start_year);
+        result += "\nstart day: " + QString::number(start_day);
 
         return result;
     }

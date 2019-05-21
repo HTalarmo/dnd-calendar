@@ -2,17 +2,18 @@
 
 DateInfo util::epoch_to_date(Epoch_date e, CalendarInfo cal){
     DateInfo info;
+    e.date -= cal.start_day;
     if(e.date >= 0){
-        info.year = e.date/303 + 1;
-        info.day = e.date%303 + 1;
+        info.year = e.date/cal.days_in_year + 1;
+        info.day = e.date%cal.days_in_year + 1;
     } else {
-        info.year = (e.date+1)/303 - 1;
-        int mod = e.date%303;
-        info.day = cal.days_in_year + (e.date+1)%303;
+        info.year = (e.date+1)/cal.days_in_year - 1;
+        int mod = e.date%cal.days_in_year;
+        info.day = cal.days_in_year + (e.date+1)%cal.days_in_year;
     }
 
     // add calendar offset
-    info.year -= cal.start_year;
+    //info.year -= cal.start_year;
 
     info.hour = e.time/(60*60);
     int e_m = e.time%(60*60);
@@ -39,7 +40,7 @@ Epoch_date util::date_to_epoch(DateInfo info, CalendarInfo cal){
     }
 
     // fix calendar offset
-    info.year += cal.start_year;
+    //info.year += cal.start_year;
 
     if(info.year > 0){
         epoch.date = (info.day-1) + (info.year-1)*cal.days_in_year;
@@ -48,6 +49,8 @@ Epoch_date util::date_to_epoch(DateInfo info, CalendarInfo cal){
     } else {
         epoch.date = 0;
     }
+
+    epoch.date += cal.start_day;
 
     epoch.time = 0;
     epoch.time += info.second;

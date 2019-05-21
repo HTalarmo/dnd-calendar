@@ -180,7 +180,8 @@ Calendar::load_calendars(){
         for(QJsonValue len : obj["month_lengths"].toArray()){
             cinfo.month_lengths.append(len.toInt());
         }
-        cinfo.start_year = obj["start_year"].toInt();
+        //cinfo.start_year = obj["start_year"].toInt();
+        cinfo.start_day = obj["start_day"].toInt();
         cinfo.days_in_year = obj["days_in_year"].toInt();
 
         QString* err = validateCalendar(cinfo);

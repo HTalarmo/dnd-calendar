@@ -34,7 +34,7 @@
                 34,
                 33
             ],
-            "start_year": 0,
+            "start_day": 0,
             "days_in_year": 303
         },
         {
@@ -53,7 +53,7 @@
                 76,
                 75
             ],
-            "start_year": -1878,
+            "start_day":  -569034,
             "days_in_year": 303
         },
         {
@@ -80,7 +80,7 @@
                 36,
                 36
             ],
-            "start_year": 1390,
+            "start_day": 421141,
             "days_in_year": 288
         }
     ],
