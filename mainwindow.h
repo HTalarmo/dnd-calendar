@@ -8,6 +8,8 @@
 #include <QThread>
 #include <QTimer>
 #include <QIcon>
+#include <QPicture>
+#include <QPainter>
 #include "calendar.h"
 #include "restdialog.h"
 #include "setdate.h"
@@ -62,6 +64,8 @@ private:
     void setDate();
     void load();
     void save();
+
+    void moon_test(int cur, int val, QColor base_color = Qt::red);
 
 };
 

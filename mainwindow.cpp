@@ -58,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->timer_stop_button->setIcon(QIcon("icons/stop_icon.png"));
     ui->timer_clear_button->setIcon(QIcon("icons/clear_icon.png"));
     ui->timer_add_time_button->setIcon(QIcon("icons/add_icon.png"));
+
+    moon_test(10, 30);
 }
 
 MainWindow::~MainWindow()
@@ -333,4 +335,32 @@ MainWindow::load(){
     }
 
     update();
+}
+
+void
+MainWindow::moon_test(int cur, int val, QColor base_color){
+    QPicture picture;
+    QPainter painter;
+    QColor bg = base_color;
+    bg.setHsv(bg.hue(), bg.saturation(), bg.value()*0.6);
+
+    QPen pen;
+    pen.setColor(base_color);
+    QRectF base_rec(0, 0, 100, 100);
+    QRectF light_rec(10,0,80,100);
+
+    QPainterPath background;
+    background.addEllipse(base_rec);
+
+    QPainterPath light;
+    light.arcTo(base_rec, 90, 180);
+    light.arcTo(light_rec, 270, -180);
+
+    // just draw a moon
+    painter.begin(&picture);
+    painter.setPen(pen);
+    painter.fillPath(background, bg);
+    painter.fillPath(light, base_color);
+    painter.end();
+    ui->moon_test_label->setPicture(picture);
 }
