@@ -35,7 +35,7 @@ public slots:
     void add_10();
     void add_1h();
     void add_rest();
-    void add_custom();
+    //void add_custom();
 
     void toolbar_action(QAction* action);
     void calendar_changed(QString calendar_name);

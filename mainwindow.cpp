@@ -38,8 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(add_1h()));
     connect(ui->add_rest, SIGNAL(clicked(bool)),
             this, SLOT(add_rest()));
-    connect(ui->add_custom, SIGNAL(clicked(bool)),
-            this, SLOT(add_custom()));
+    //connect(ui->add_custom, SIGNAL(clicked(bool)),
+            //this, SLOT(add_custom()));
     connect(ui->event_accept, SIGNAL(clicked(bool)),
             this, SLOT(add_event()));
     connect(ui->event_text, SIGNAL(returnPressed()),
@@ -139,31 +139,31 @@ MainWindow::add_rest(){
 
 }
 
-void
-MainWindow::add_custom(){
-    int y = ui->add_years_vbox->value();
-    ui->add_years_vbox->setValue(0);
+//void
+//MainWindow::add_custom(){
+//    int y = ui->add_years_vbox->value();
+//    ui->add_years_vbox->setValue(0);
 
-    int d = ui->add_days_vbox->value();
-    ui->add_days_vbox->setValue(0);
+//    int d = ui->add_days_vbox->value();
+//    ui->add_days_vbox->setValue(0);
 
-    int h = ui->add_hours_vbox->value();
-    ui->add_hours_vbox->setValue(0);
+//    int h = ui->add_hours_vbox->value();
+//    ui->add_hours_vbox->setValue(0);
 
-    int m = ui->add_minutes_vbox->value();
-    ui->add_minutes_vbox->setValue(0);
+//    int m = ui->add_minutes_vbox->value();
+//    ui->add_minutes_vbox->setValue(0);
 
-    int s = ui->add_seconds_vbox->value();
-    ui->add_seconds_vbox->setValue(0);
+//    int s = ui->add_seconds_vbox->value();
+//    ui->add_seconds_vbox->setValue(0);
 
-    cal->add_seconds(s);
-    cal->add_minutes(m);
-    cal->add_hours(h);
-    cal->add_days(d);
-    cal->add_years(y);
+//    cal->add_seconds(s);
+//    cal->add_minutes(m);
+//    cal->add_hours(h);
+//    cal->add_days(d);
+//    cal->add_years(y);
 
-    update();
-}
+//    update();
+//}
 
 void
 MainWindow::toolbar_action(QAction *action){
