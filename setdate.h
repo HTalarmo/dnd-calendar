@@ -18,8 +18,10 @@ public:
 
     Epoch_date epoch;
 
+    // sets the calendar and restrictions for the menus
     void set_calendar(CalendarInfo calendar);
 
+    // sets start values for all
     void set_values(Epoch_date e);
 
 public slots:
