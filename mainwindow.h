@@ -37,6 +37,19 @@ public slots:
     void add_rest();
     //void add_custom();
 
+    void custom_year_p();
+    void custom_year_m();
+    void custom_day_p();
+    void custom_day_m();
+    void custom_hour_p();
+    void custom_hour_m();
+    void custom_min_p();
+    void custom_min_m();
+    void custom_sec_p();
+    void custom_sec_m();
+    void custom_add();
+    void custom_clear();
+
     void toolbar_action(QAction* action);
     void calendar_changed(QString calendar_name);
 
@@ -64,6 +77,7 @@ private:
     void setup_toolbar();
     void setup_table();
     void setup_moons();
+    void setup_custom_validators();
 
     void setDate();
     void load();

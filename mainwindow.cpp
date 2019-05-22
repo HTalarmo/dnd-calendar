@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setup_toolbar();
     setup_table();
     setup_moons();
+    setup_custom_validators();
 
     update();
     update_timer();
@@ -38,14 +39,39 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(add_1h()));
     connect(ui->add_rest, SIGNAL(clicked(bool)),
             this, SLOT(add_rest()));
-    //connect(ui->add_custom, SIGNAL(clicked(bool)),
-            //this, SLOT(add_custom()));
     connect(ui->event_accept, SIGNAL(clicked(bool)),
             this, SLOT(add_event()));
     connect(ui->event_text, SIGNAL(returnPressed()),
             this, SLOT(add_event()));
     connect(ui->remove_button, SIGNAL(clicked(bool)),
             this, SLOT(remove_event()));
+
+    // custom button connections
+    connect(ui->year_minus, SIGNAL(clicked(bool)),
+            this, SLOT(custom_year_m()));
+    connect(ui->year_plus, SIGNAL(clicked(bool)),
+            this, SLOT(custom_year_p()));
+    connect(ui->day_minus, SIGNAL(clicked(bool)),
+            this, SLOT(custom_day_m()));
+    connect(ui->day_plus, SIGNAL(clicked(bool)),
+            this, SLOT(custom_day_p()));
+    connect(ui->hour_minus, SIGNAL(clicked(bool)),
+            this, SLOT(custom_hour_m()));
+    connect(ui->hour_plus, SIGNAL(clicked(bool)),
+            this, SLOT(custom_hour_p()));
+    connect(ui->min_minus, SIGNAL(clicked(bool)),
+            this, SLOT(custom_min_m()));
+    connect(ui->min_plus, SIGNAL(clicked(bool)),
+            this, SLOT(custom_min_p()));
+    connect(ui->sec_plus, SIGNAL(clicked(bool)),
+            this, SLOT(custom_sec_p()));
+    connect(ui->sec_minus, SIGNAL(clicked(bool)),
+            this, SLOT(custom_sec_m()));
+    connect(ui->custom_add, SIGNAL(clicked(bool)),
+            this, SLOT(custom_add()));
+    connect(ui->custom_clear, SIGNAL(clicked(bool)),
+            this, SLOT(custom_clear()));
+
 
     connect(ui->timer_start_button, SIGNAL(clicked(bool)),
             this, SLOT(start_timer()));
@@ -164,6 +190,110 @@ MainWindow::add_rest(){
 
 //    update();
 //}
+
+void
+MainWindow::custom_year_m(){
+    int val = ui->year_line_edit->text().toInt();
+    ui->year_line_edit->setText(QString::number(--val));
+    update();
+}
+
+
+void
+MainWindow::custom_year_p(){
+    int val = ui->year_line_edit->text().toInt();
+    ui->year_line_edit->setText(QString::number(++val));
+    update();
+}
+
+
+void
+MainWindow::custom_day_m(){
+    int val = ui->day_line_edit->text().toInt();
+    ui->day_line_edit->setText(QString::number(--val));
+    update();
+}
+
+
+void
+MainWindow::custom_day_p(){
+    int val = ui->day_line_edit->text().toInt();
+    ui->day_line_edit->setText(QString::number(++val));
+    update();
+}
+
+void
+MainWindow::custom_hour_p(){
+    int val = ui->hour_line_edit->text().toInt();
+    ui->hour_line_edit->setText(QString::number(++val));
+    update();
+}
+
+void
+MainWindow::custom_hour_m(){
+    int val = ui->hour_line_edit->text().toInt();
+    ui->hour_line_edit->setText(QString::number(--val));
+    update();
+}
+
+
+void
+MainWindow::custom_min_p(){
+    int val = ui->min_line_edit->text().toInt();
+    ui->min_line_edit->setText(QString::number(++val));
+    update();
+}
+
+
+void
+MainWindow::custom_min_m(){
+    int val = ui->min_line_edit->text().toInt();
+    ui->min_line_edit->setText(QString::number(--val));
+    update();
+}
+
+
+void
+MainWindow::custom_sec_p(){
+    int val = ui->sec_line_edit->text().toInt();
+    ui->sec_line_edit->setText(QString::number(++val));
+    update();
+}
+
+
+void
+MainWindow::custom_sec_m(){
+    int val = ui->sec_line_edit->text().toInt();
+    ui->sec_line_edit->setText(QString::number(--val));
+    update();
+}
+
+void
+MainWindow::custom_add(){
+    int y = ui->year_line_edit->text().toInt();
+    int d = ui->day_line_edit->text().toInt();
+    int h = ui->hour_line_edit->text().toInt();
+    int m = ui->min_line_edit->text().toInt();
+    int s = ui->sec_line_edit->text().toInt();
+
+    cal->add_years(y);
+    cal->add_days(d);
+    cal->add_hours(h);
+    cal->add_minutes(m);
+    cal->add_seconds(s);
+
+    update();
+}
+
+void
+MainWindow::custom_clear(){
+    ui->year_line_edit->setText("0");
+    ui->day_line_edit->setText("0");
+    ui->hour_line_edit->setText("0");
+    ui->min_line_edit->setText("0");
+    ui->sec_line_edit->setText("0");
+    update();
+}
 
 void
 MainWindow::toolbar_action(QAction *action){
@@ -304,6 +434,15 @@ MainWindow::setup_moons(){
     for(QFrame *moon_frame : moon_frames){
         ui->moon_frame->layout()->addWidget(moon_frame);
     }
+}
+
+void
+MainWindow::setup_custom_validators(){
+    ui->year_line_edit->setValidator(new QIntValidator());
+    ui->day_line_edit->setValidator(new QIntValidator());
+    ui->hour_line_edit->setValidator(new QIntValidator());
+    ui->min_line_edit->setValidator(new QIntValidator());
+    ui->sec_line_edit->setValidator(new QIntValidator());
 }
 
 void
