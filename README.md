@@ -1,5 +1,5 @@
 # dnd-calendar
-This is a simple calendar application to use to assist with GMing for Dungeons & Dragons and other tabletop RPGs. It still looks pretty rough on a few spots (namely the timekeeping controls and dialogs) but is functional. Sessions can be saved and loaded in .save files which store the data in .json format.
+This is a simple calendar application to use to assist with GMing for Dungeons & Dragons and other tabletop RPGs. Sessions can be saved and loaded in .save files which store the data in .json format.
 
 ## Timekeeping
 The calendar allows the GM to keep track of time during a game by allowing them to set a date and time for the current time and controls to change it. The GUI comes with 4 pre-programmed buttons for +1 turn (6 seconds), +10 minutes, +1 hour and Rest, which calculates the amount of hours required for a group of n partymembers to rest with equal watches taken over the course of the night so that all partymembers get full 8 hours of sleep.
@@ -15,7 +15,7 @@ The calendar has a simple event list included to which the GM can add notable ev
 The calendar also allows the GM to keep track of the lunar cycles if desired. It will show the current lunar phase as well as how many days away the next full moon and new moon are for each moon. The moons can be set up in the custom calendars.
 
 ## Custom calendars
-Calendars are stored in a .json file called [calendars.json](https://github.com/HTalarmo/dnd-calendar/blob/master/calendars.json). The structure of the file can be described as follows:
+Calendars are stored in a .json file called [calendars.json](https://github.com/HTalarmo/dnd-calendar/blob/master/calendars.json). The program can handle calendars having a varying amount of days in their years but if the amount of days in all the months combined doesn't add up to the days in the year, it will simply invalidate the calendar. The structure of the file can be described as follows:
 ```
 "calendars":[
   {
@@ -48,4 +48,4 @@ Calendars are stored in a .json file called [calendars.json](https://github.com/
 ]
 ```
 
-The program can handle calendars having a varying amount of days in their years but if the amount of days in all the months combined doesn't add up to the days in the year, it will simply invalidate the calendar. 
+
